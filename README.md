@@ -1,6 +1,6 @@
 ## VITAL 3 (2026 Hackathon Winner) 
 <p align="center">
-<img src="https://skillicons.dev/icons?i=python,django,html,css,bootstrap,git,github,mysql,vscode"/>
+<img src="https://skillicons.dev/icons?i=js,html,css,python"/>
 </p>
 
 
