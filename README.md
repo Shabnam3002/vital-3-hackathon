@@ -1,11 +1,6 @@
 ## VITAL 3 (2026 Hackathon Winner) 
 <p align="center">
-  
-  ![JavaScript](https://img.shields.io/badge/JavsScript-yellow.svg)
-  ![Html](https://img.shields.io/badge/Html-orange.svg)
-  ![Cssl](https://img.shields.io/badge/Css-purple.svg)
-  ![Python](https://img.shields.io/badge/Python-blue.svg)
-
+<img src="https://skillicons.dev/icons?i=python,django,html,css,bootstrap,git,github,mysql,vscode"/>
 </p>
 
 
