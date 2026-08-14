@@ -3,10 +3,7 @@
 <img src="https://skillicons.dev/icons?i=js,html,css,python"/>
 </p>
 
-<p align="center">
-Dual-Track Diagnostics
-</p>
-## Dual-Track Diagnostics
+<h2 align="center"> Dual-Track Diagnostics</h2>
 Diagnostics in human medicine and crop science share a fundamental bottleneck: early-stage detection requires specialized, expensive hardware.
 
 For Humans: Traditional clinical monitoring requires pulse oximeters, ECGs, and chest straps.
