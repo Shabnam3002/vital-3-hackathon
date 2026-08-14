@@ -1,0 +1,49 @@
+/* ══════════════════════════════════════════════
+   TOKENS — design variables & reset
+   duo-diagnose / CODE:VITAL 2026
+══════════════════════════════════════════════ */
+
+:root {
+  --bg0: #08080d;
+  --bg1: #0f0f16;
+  --bg2: #16161f;
+  --bg3: #1e1e28;
+  --bg4: #26262f;
+  --line:  rgba(255,255,255,0.05);
+  --line2: rgba(255,255,255,0.09);
+  --line3: rgba(255,255,255,0.15);
+  --t0: #f4f4f5;
+  --t1: #d4d4d8;
+  --t2: #a1a1aa;
+  --t3: #71717a;
+  --blue:   #3b82f6;
+  --blue2:  #2563eb;
+  --bblue:  rgba(59,130,246,0.12);
+  --green:  #22c55e;
+  --green2: #16a34a;
+  --bgreen: rgba(34,197,94,0.10);
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+  --rad:    10px;
+  --rad-lg: 14px;
+  --rad-xl: 18px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg0);
+  color: var(--t1);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* Utility */
+.hidden  { display: none !important; }
+.visible { display: block !important; }
+.gap-10  { height: 10px; }
+.gap-14  { height: 14px; }
+.muted   { color: var(--t3); font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; margin-top: 5px; }

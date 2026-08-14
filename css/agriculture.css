@@ -1,0 +1,75 @@
+/* ══════════════════════════════════════════════
+   AGRICULTURE TRACK — uploader, samples, predictions
+   duo-diagnose / CODE:VITAL 2026
+══════════════════════════════════════════════ */
+
+/* ── Leaf uploader ──────────────────────────── */
+.uploader-area {
+  border: 2px dashed rgba(34,197,94,0.22);
+  background: rgba(34,197,94,0.02);
+  border-radius: var(--rad-lg);
+  padding: 38px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.uploader-area:hover {
+  border-color: var(--green);
+  background: rgba(34,197,94,0.05);
+}
+.uploader-icon    { font-size: 2.8rem; display: block; margin-bottom: 12px; }
+.uploader-title   { font-size: 1rem; font-weight: 700; color: var(--t0); margin-bottom: 4px; }
+.uploader-sub     { font-size: 0.82rem; color: var(--t3); }
+.leaf-preview     { width: 100%; height: 100%; object-fit: cover; border-radius: 11px; display: none; }
+
+/* Scan animation overlay */
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: var(--green); box-shadow: 0 0 10px var(--green);
+  display: none; top: 0;
+  animation: scan 1.6s linear infinite;
+}
+
+/* ── Sample leaf grid ───────────────────────── */
+.sample-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 14px; }
+.sample-card {
+  background: var(--bg2); border: 1px solid var(--line2);
+  border-radius: var(--rad); padding: 8px;
+  text-align: center; cursor: pointer;
+  transition: all 0.2s;
+}
+.sample-card:hover {
+  border-color: var(--green);
+  background: var(--bgreen);
+  transform: translateY(-2px);
+}
+.sample-card.selected { border-color: var(--green); background: var(--bgreen); }
+.sample-thumb {
+  width: 100%; height: 58px; object-fit: cover;
+  border-radius: 6px; margin-bottom: 5px;
+  background: var(--bg3);
+}
+.sample-lbl { font-size: 0.72rem; font-weight: 700; color: var(--t1); }
+.sample-sub { font-size: 0.65rem; color: var(--t3); margin-top: 1px; }
+
+/* ── Prediction cards ───────────────────────── */
+.pred-card {
+  background: var(--bg2); border: 1px solid var(--line2);
+  border-radius: var(--rad); padding: 15px;
+  margin-bottom: 10px;
+}
+.pred-card.top { background: var(--bgreen); border-color: rgba(34,197,94,0.2); }
+
+.pred-eyebrow {
+  font-size: 0.62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--t3); margin-bottom: 5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.pred-card.top .pred-eyebrow { color: #4ade80; }
+
+.pred-name   { font-size: 0.98rem; font-weight: 600; color: var(--t0); margin-bottom: 10px; }
+.pred-detail { font-size: 0.8rem; color: var(--t2); line-height: 1.55; margin-top: 4px; }
+.pred-detail strong { color: var(--t1); font-weight: 500; }

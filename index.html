@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUO-DIAGNOSE — CODE:VITAL 2026</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+
+<!-- Stylesheets (order matters: tokens first) -->
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/camera.css">
+<link rel="stylesheet" href="css/agriculture.css">
+<link rel="stylesheet" href="css/workspace.css">
+<link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logomark">🩺</div>
+    <div class="sb-wordmark">
+      <div class="sb-name"><span>DUO</span>-<em>DIAGNOSE</em></div>
+      <div class="sb-sub">CODE:VITAL 2026</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Navigation</div>
+  <button class="nav-btn active-med" id="nav-med" onclick="switchTrack('medicine')">
+    🩺 &nbsp;Remote Vital Signs
+  </button>
+  <button class="nav-btn" id="nav-agri" onclick="switchTrack('agriculture')">
+    🌱 &nbsp;Crop Diagnostics
+  </button>
+
+  <div class="sb-section">Session</div>
+  <div class="sb-stat" style="--sb-ac:var(--blue);">
+    <span class="sb-stat-icon">🩺</span>
+    <div>
+      <div class="sb-stat-label">Last Vitals</div>
+      <div class="sb-stat-val muted" id="sb-vitals-val">No measurement yet</div>
+    </div>
+  </div>
+  <div class="sb-stat" style="--sb-ac:var(--green);">
+    <span class="sb-stat-icon">🌱</span>
+    <div>
+      <div class="sb-stat-label">Last Crop</div>
+      <div class="sb-stat-val muted" id="sb-crop-val">No analysis yet</div>
+    </div>
+  </div>
+
+  <div class="sb-section" style="margin-top:16px;">Config</div>
+  <div class="api-ok">
+    <span class="api-dot"></span>
+    <span style="flex:1;font-size:0.8rem;font-weight:600;">Demo mode active</span>
+    <span class="api-ok-badge">READY</span>
+  </div>
+
+  <div style="height:14px;"></div>
+  <div class="sb-about">
+    <div class="sb-about-hdr">
+      <span class="sb-about-hdr-t">About</span>
+      <span style="font-size:0.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">AKS University</span>
+    </div>
+    <div class="sb-about-body">
+      <strong>DUO-DIAGNOSE</strong> — unified AI diagnostics across medicine &amp; agriculture in one interface.
+      <div class="sb-about-row">
+        <span class="sb-about-row-icon">🩺</span>
+        <span class="sb-about-row-text"><b>Medicine:</b> Contactless HR, SpO₂ &amp; stress via webcam rPPG.</span>
+      </div>
+      <div class="sb-about-row">
+        <span class="sb-about-row-icon">🌱</span>
+        <span class="sb-about-row-text"><b>Agriculture:</b> Crop leaf disease ID via ResNet-50 vision model.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MAIN WORKSPACE
+════════════════════════════════════════ -->
+<div class="workspace">
+
+  <!-- ══════════════════
+       MEDICINE TRACK
+  ══════════════════ -->
+  <div id="view-med" class="main-content">
+
+    <!-- Hero -->
+    <div class="hero" style="--ha:#3b82f6;--ha2:#6366f1;--hglow:rgba(59,130,246,0.08);
+         --hibg:rgba(59,130,246,0.12);--hiborder:rgba(59,130,246,0.22);
+         --hbg:rgba(59,130,246,0.12);--hborder:rgba(59,130,246,0.24);--hclr:#93c5fd;">
+      <div class="hero-badge">Medicine Track</div>
+      <div class="hero-inner">
+        <div class="hero-icon">🩺</div>
+        <div>
+          <div class="hero-title">Remote Vital Signs</div>
+          <div class="hero-sub">Contactless heart rate, SpO₂ &amp; stress via webcam rPPG analysis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camera + controls -->
+    <div class="grid2">
+
+      <!-- Camera card -->
+      <div class="card">
+        <div class="cam-chrome">
+          <div style="display:flex;align-items:center;">
+            <div class="cam-dots">
+              <div class="c-dot r"></div>
+              <div class="c-dot y"></div>
+              <div class="c-dot g"></div>
+            </div>
+            <span class="cam-label" style="margin-left:12px;">LIVE · rPPG CAPTURE STREAM</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="cam-live-dot"></span>
+            <span class="cam-live">● REC</span>
+          </div>
+        </div>
+
+        <div class="cam-viewport">
+          <!-- Live webcam feed (hidden until camera grants permission) -->
+          <video id="cam-video" autoplay playsinline muted style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);"></video>
+
+          <!-- Fallback gradient shown before / if camera fails -->
+          <div class="cam-feed-bg" id="cam-placeholder"></div>
+
+          <!-- Simulated face (shown only in fallback mode) -->
+          <div class="cam-face">
+            <div class="cam-face-oval"></div>
+            <div class="cam-bbox"></div>
+            <div class="cam-roi"></div>
+          </div>
+
+          <!-- Green detection box overlaid on live feed -->
+          <div class="cam-bbox-overlay" style="display:none;position:absolute;top:10%;left:22%;width:56%;height:78%;border:2px solid var(--green);border-radius:6px;box-shadow:0 0 12px rgba(34,197,94,0.25);pointer-events:none;animation:bbox-flicker 3s ease-in-out infinite;"></div>
+          <!-- Forehead ROI on live feed -->
+          <div class="cam-roi-overlay" style="display:none;position:absolute;top:14%;left:34%;width:32%;height:12%;border:1px dashed rgba(255,255,255,0.3);border-radius:4px;background:rgba(59,130,246,0.08);pointer-events:none;"></div>
+
+          <!-- Persistent face-position status (replaces the old flash toast) -->
+          <div class="cam-face-msg" id="cam-face-msg">
+            <span class="cfm-icon">⚠</span>
+            <span>Face not recognised — position it inside the square</span>
+          </div>
+
+          <!-- Viewfinder corners -->
+          <div class="vf tl"></div><div class="vf tr"></div>
+          <div class="vf bl"></div><div class="vf br"></div>
+
+          <!-- Status badges -->
+          <div class="cam-badges">
+            <div class="cam-badge" id="camera-badge"><span class="badge-dot y"></span>Camera: Starting…</div>
+            <div class="cam-badge" id="face-badge"><span class="badge-dot y"></span>Detecting…</div>
+            <div class="cam-badge"><span class="badge-dot g"></span>Lighting: Good</div>
+          </div>
+
+          <!-- Error/fallback notice -->
+          <div id="cam-error-notice" style="display:none;position:absolute;bottom:64px;left:50%;transform:translateX(-50%);background:rgba(8,8,17,0.88);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:7px 14px;font-size:0.72rem;color:#fcd34d;font-family:'JetBrains Mono',monospace;white-space:nowrap;backdrop-filter:blur(4px);"></div>
+
+          <span class="wave-label">PPG SIGNAL</span>
+          <div class="cam-wave" id="cam-wave-bars"></div>
+        </div>
+
+        <div class="cam-statusbar">
+          <div class="sb-item"><span class="sb-ok-dot"></span>SIGNAL ACTIVE</div>
+          <div class="sb-item">HAAR CASCADE</div>
+          <div class="sb-item">rPPG v2</div>
+          <span class="sb-right">ENGINE READY</span>
+        </div>
+
+        <div style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+          <button class="btn-primary" id="enable-cam-btn" onclick="handleEnableCamera()"
+                  style="background:var(--bg3);border:1px solid rgba(59,130,246,0.35);color:#93c5fd;box-shadow:none;">
+            📷 &nbsp;Enable Camera
+          </button>
+          <button class="btn-primary" id="start-btn" onclick="startCapture()" disabled>
+            ▶ &nbsp;Start 15-Second Measurement
+          </button>
+          <div class="progress-wrap" id="progress-wrap" style="display:none;">
+            <div class="progress-hdr">
+              <span>CAPTURING PULSE VALUES · 15s</span>
+              <span id="progress-timer" style="color:var(--blue);font-weight:800;">15s</span>
+            </div>
+            <div class="progress-bg">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-sub" id="progress-sub">Collecting frames… 0 / 450</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control panel card -->
+      <div class="card">
+        <div class="ctrl-panel">
+          <div class="ctrl-section-lbl">Setup checklist</div>
+
+          <div class="guide">
+            <div class="guide-item" style="--gl-clr:#60a5fa;--gnum-bg:rgba(59,130,246,0.12);">
+              <div class="guide-num">1</div>
+              <div>
+                <div class="guide-label">Face position</div>
+                <div class="guide-desc">Centre your forehead in the preview and hold still.</div>
+              </div>
+            </div>
+            <div class="guide-item" style="--gl-clr:#60a5fa;--gnum-bg:rgba(59,130,246,0.12);">
+              <div class="guide-num">2</div>
+              <div>
+                <div class="guide-label">Lighting</div>
+                <div class="guide-desc">Even ambient light — no harsh backlights or dim rooms.</div>
+              </div>
+            </div>
+            <div class="guide-item" style="--gl-clr:#60a5fa;--gnum-bg:rgba(59,130,246,0.12);">
+              <div class="guide-num">3</div>
+              <div>
+                <div class="guide-label">Keep still</div>
+                <div class="guide-desc">Breathe normally for the full 30-second capture.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ctrl-div">
+            <div class="eq">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </div>
+            ready to scan
+          </div>
+
+          <div class="status-pills">
+            <div class="pill ok"><span class="pill-dot g"></span>Face detected</div>
+            <div class="pill ok"><span class="pill-dot g"></span>Lighting good</div>
+          </div>
+
+          <div style="background:var(--bg2);border:1px solid var(--line2);border-radius:var(--rad);padding:12px;margin-top:4px;">
+            <div class="ctrl-section-lbl">Live signal</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-size:0.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;">BPM (raw)</div>
+                <div style="font-size:1.3rem;font-weight:800;color:var(--t0);letter-spacing:-0.02em;" id="live-bpm">—</div>
+              </div>
+              <div>
+                <div style="font-size:0.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;">Signal quality</div>
+                <div style="font-size:1.3rem;font-weight:800;color:var(--t0);letter-spacing:-0.02em;" id="live-sq">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results (inline, visible after modal is dismissed) -->
+    <div class="results-box" id="vitals-results" style="display:none;">
+      <div class="results-hdr">
+        <span>📊</span>
+        <h3>Measurement Results</h3>
+        <span class="results-meta" id="vitals-time">30s capture · 12:00:00</span>
+      </div>
+
+      <div class="alert success" id="vitals-alert">
+        ✓ &nbsp;Measurement complete — signal quality: <strong id="vitals-sq-val">84%</strong>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card" style="--m-ibg:rgba(59,130,246,0.12);">
+          <div class="metric-top">
+            <div class="metric-icon">❤️</div>
+            <div class="metric-lbl">Heart Rate</div>
+          </div>
+          <div class="metric-val" id="res-hr">—<span class="metric-unit">BPM</span></div>
+        </div>
+        <div class="metric-card" style="--m-ibg:rgba(239,68,68,0.10);">
+          <div class="metric-top">
+            <div class="metric-icon">🩸</div>
+            <div class="metric-lbl">SpO₂</div>
+          </div>
+          <div class="metric-val" id="res-spo2">—<span class="metric-unit">%</span></div>
+        </div>
+        <div class="metric-card" id="stress-card" style="--m-ibg:rgba(34,197,94,0.10);">
+          <div class="metric-top">
+            <div class="metric-icon">🧠</div>
+            <div class="metric-lbl">Stress</div>
+          </div>
+          <div class="metric-val" id="res-stress" style="font-size:1.15rem;">—</div>
+        </div>
+        <div class="metric-card" style="--m-ibg:rgba(99,102,241,0.12);">
+          <div class="metric-top">
+            <div class="metric-icon">📈</div>
+            <div class="metric-lbl">HRV RMSSD</div>
+          </div>
+          <div class="metric-val" id="res-hrv">—<span class="metric-unit">ms</span></div>
+        </div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-row">
+          <span class="bar-lbl">Signal Quality</span>
+          <span class="bar-pct" id="bar-pct-val">0%</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-fill-val" style="width:0%"></div></div>
+      </div>
+
+      <div class="expander" id="exp-vitals">
+        <div class="expander-hdr" onclick="toggleExp('exp-vitals')">
+          What do these numbers mean? <span class="chevron">▼</span>
+        </div>
+        <div class="expander-body" style="display:none;">
+          <strong>Heart Rate (BPM)</strong> — Pulse rate extracted from subtle skin-colour variations caused by blood-volume changes (rPPG).<br><br>
+          <strong>SpO₂ (%)</strong> — Oxygen saturation estimated via Red / Blue channel light-absorption ratio. Normal range: 95–100%.<br><br>
+          <strong>HRV &amp; Stress</strong> — RMSSD measures heart-rate variability. Higher HRV → Lower physiological stress.
+        </div>
+      </div>
+
+      <!-- Inline AI panel (populated after modal typewriter finishes) -->
+      <div id="ai-interp-section" style="display:none;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <div style="width:22px;height:22px;border-radius:5px;
+                      background:rgba(99,102,241,0.14);
+                      border:1px solid rgba(99,102,241,0.28);
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:0.72rem;flex-shrink:0;">🤖</div>
+          <div style="font-size:0.57rem;font-weight:700;letter-spacing:0.14em;
+                      text-transform:uppercase;color:var(--t3);
+                      font-family:'JetBrains Mono',monospace;">Claude AI Interpretation</div>
+          <div style="flex:1;height:1px;background:var(--line2);"></div>
+          <span style="font-size:0.58rem;font-weight:700;letter-spacing:0.1em;
+                       text-transform:uppercase;color:rgba(99,102,241,0.55);
+                       font-family:'JetBrains Mono',monospace;padding:2px 7px;
+                       background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);
+                       border-radius:20px;">BETA</span>
+        </div>
+        <div id="ai-interp-loading"
+             style="background:var(--bg2);border:1px solid var(--line2);
+                    border-radius:var(--rad);padding:20px;text-align:center;">
+          <div style="font-size:1.6rem;animation:subtle-bob 1.2s ease-in-out infinite;margin-bottom:9px;">🧠</div>
+          <div style="font-size:0.83rem;font-weight:600;color:var(--t1);margin-bottom:5px;">Analysing vitals with Claude AI…</div>
+          <div id="ai-loading-sub" style="font-size:0.68rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">Preparing health report</div>
+        </div>
+        <div id="ai-interp-result"
+             style="display:none;background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.18);
+                    border-radius:var(--rad);padding:17px 19px;animation:slide-up 0.3s ease;">
+          <div id="ai-interp-text" style="font-size:0.855rem;color:var(--t1);line-height:1.78;"></div>
+          <div style="margin-top:13px;padding-top:10px;border-top:1px solid rgba(99,102,241,0.12);
+                      display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.6rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">⚡ Powered by Claude AI</span>
+            <span style="color:var(--line2);">·</span>
+            <span style="font-size:0.6rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">Not a substitute for professional medical advice</span>
+          </div>
+        </div>
+        <div id="ai-interp-error" class="alert warn" style="display:none;">
+          ⚠ &nbsp;AI analysis unavailable — check your connection
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button class="btn-ghost" onclick="resetVitals()">↺ &nbsp;Reset &amp; measure again</button>
+      </div>
+    </div>
+
+  </div><!-- /view-med -->
+
+  <!-- ══════════════════
+       AGRICULTURE TRACK
+  ══════════════════ -->
+  <div id="view-agri" class="main-content hidden">
+
+    <!-- Hero -->
+    <div class="hero" style="--ha:#22c55e;--ha2:#10b981;--hglow:rgba(34,197,94,0.07);
+         --hibg:rgba(34,197,94,0.12);--hiborder:rgba(34,197,94,0.22);
+         --hbg:rgba(34,197,94,0.10);--hborder:rgba(34,197,94,0.22);--hclr:#86efac;">
+      <div class="hero-badge">Agriculture Track</div>
+      <div class="hero-inner">
+        <div class="hero-icon">🌱</div>
+        <div>
+          <div class="hero-title">Crop Disease Detector</div>
+          <div class="hero-sub">Upload a leaf photo — AI identifies disease and recommends treatment</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+
+      <!-- Upload card -->
+      <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <div class="ctrl-section-lbl">Upload leaf photo</div>
+          <div class="uploader-area" id="uploader" onclick="triggerFileSelect()">
+            <div class="scan-line" id="scan-line"></div>
+            <span class="uploader-icon" id="up-icon">🍃</span>
+            <img class="leaf-preview" id="leaf-img" alt="Leaf preview">
+            <div id="up-title" class="uploader-title">Drop leaf photo here</div>
+            <div id="up-sub" class="uploader-sub">JPG · PNG · WEBP · max 10 MB &nbsp;·&nbsp; or click to browse</div>
+          </div>
+          <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="handleFileSelect(event)">
+        </div>
+
+        <div>
+          <div class="ctrl-section-lbl" style="margin-bottom:10px;">Or select a sample leaf</div>
+          <div class="sample-grid">
+            <div class="sample-card" id="sc-tomato" onclick="loadSample('tomato')">
+              <div class="sample-thumb" style="background:linear-gradient(135deg,#1a4a1a 0%,#2d7a2d 40%,#a84a00 100%);border-radius:6px;"></div>
+              <div class="sample-lbl">Tomato</div>
+              <div class="sample-sub">Early Blight</div>
+            </div>
+            <div class="sample-card" id="sc-potato" onclick="loadSample('potato')">
+              <div class="sample-thumb" style="background:linear-gradient(135deg,#0d2f0d 0%,#1f5c1f 45%,#1a2f08 100%);border-radius:6px;"></div>
+              <div class="sample-lbl">Potato</div>
+              <div class="sample-sub">Late Blight</div>
+            </div>
+            <div class="sample-card" id="sc-corn" onclick="loadSample('corn')">
+              <div class="sample-thumb" style="background:linear-gradient(135deg,#0a3d0a 0%,#1f7a1f 50%,#2a6a00 100%);border-radius:6px;"></div>
+              <div class="sample-lbl">Corn</div>
+              <div class="sample-sub">Healthy</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary green" id="analyse-btn" onclick="startAnalysis()" disabled>
+          🔍 &nbsp;Analyse Crop Health
+        </button>
+      </div>
+
+      <!-- Analysis panel card -->
+      <div class="card">
+        <div class="ctrl-panel">
+          <div class="ctrl-section-lbl">Analysis pipeline</div>
+
+          <div class="guide" id="agri-guide">
+            <div class="guide-item" id="ag-step1" style="--gl-clr:#4ade80;--gnum-bg:rgba(34,197,94,0.12);">
+              <div class="guide-num">1</div>
+              <div>
+                <div class="guide-label">Image uploaded</div>
+                <div class="guide-desc">Select a sample or upload a high-resolution leaf photo.</div>
+              </div>
+            </div>
+            <div class="guide-item" id="ag-step2" style="--gl-clr:#4ade80;--gnum-bg:rgba(34,197,94,0.12);">
+              <div class="guide-num">2</div>
+              <div>
+                <div class="guide-label">Neural scan</div>
+                <div class="guide-desc">ResNet-50 runs leaf pattern segmentation and classifies disease signature.</div>
+              </div>
+            </div>
+            <div class="guide-item" id="ag-step3" style="--gl-clr:#4ade80;--gnum-bg:rgba(34,197,94,0.12);">
+              <div class="guide-num">3</div>
+              <div>
+                <div class="guide-label">Action plan</div>
+                <div class="guide-desc">Review primary classification, description, and recommended treatment.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results summary in ctrl panel -->
+          <div id="agri-results" class="hidden">
+            <div class="bar-wrap" style="margin-bottom:14px;">
+              <div class="bar-row">
+                <span class="bar-lbl">Model confidence</span>
+                <span class="bar-pct" id="ag-conf-pct">0%</span>
+              </div>
+              <div class="bar-bg">
+                <div class="bar-fill" id="ag-conf-fill" style="width:0%;background:var(--green);"></div>
+              </div>
+            </div>
+
+            <div style="background:var(--bg2);border:1px solid var(--line2);border-radius:var(--rad);padding:12px;font-size:0.8rem;color:var(--t2);line-height:1.6;">
+              <div style="font-size:0.62rem;color:var(--t3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Model used</div>
+              <span style="color:var(--t1);font-weight:600;" id="ag-model-id">ozair/plant-disease</span>
+              <span style="color:var(--t3);font-size:0.7rem;margin-left:6px;">· PlantVillage · 38 classes</span>
+            </div>
+
+            <div style="margin-top:10px;">
+              <button class="btn-ghost" onclick="resetCrop()" style="width:100%;">↺ &nbsp;Analyse another leaf</button>
+            </div>
+          </div>
+
+          <!-- Processing indicator -->
+          <div id="agri-processing" class="hidden" style="text-align:center;padding:20px 0;">
+            <div style="font-size:2rem;animation:subtle-bob 1s ease-in-out infinite;">🔬</div>
+            <div style="font-size:0.85rem;font-weight:600;color:var(--t0);margin:10px 0 4px;" id="ag-proc-msg">Initialising model…</div>
+            <div style="font-size:0.75rem;color:var(--t3);font-family:'JetBrains Mono',monospace;" id="ag-proc-sub">Loading ResNet-50 weights</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Full-width prediction results -->
+    <div id="crop-predictions" class="hidden">
+      <div class="results-box" style="display:block;">
+        <div class="results-hdr">
+          <span>🧬</span>
+          <h3>Diagnostic Results</h3>
+          <span class="results-meta" id="ag-latency">843 ms · 12:00:00</span>
+        </div>
+        <div id="ag-alert-box"></div>
+        <div id="pred-cards"></div>
+        <div class="muted" id="ag-model-footer">model: ozair/plant-disease</div>
+      </div>
+    </div>
+
+  </div><!-- /view-agri -->
+
+</div><!-- /workspace -->
+
+<!-- ════════════════════════════════════════
+     VITALS RESULTS POPUP MODAL
+════════════════════════════════════════ -->
+<div id="vitals-modal-overlay" class="modal-overlay hidden">
+  <div class="modal-panel" id="vitals-modal">
+
+    <!-- ── Header ── -->
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <div class="modal-success-icon">💓</div>
+        <div>
+          <div class="modal-eyebrow">Scan Complete</div>
+          <div class="modal-title-main">Vitals Report</div>
+          <div class="modal-time-sub" id="m-time">15s capture · 12:00:00</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeVitalsModal()" title="Close (Esc)">✕</button>
+    </div>
+
+    <!-- ── Body ── -->
+    <div class="modal-body">
+
+      <!-- Success alert -->
+      <div class="alert success" style="margin-bottom:0;">
+        ✓ &nbsp;Measurement complete — signal quality:&nbsp;<strong id="m-sq-val">—</strong>
+      </div>
+
+      <!-- 2×2 metric grid -->
+      <div class="modal-metric-grid">
+        <div class="metric-card" style="--m-ibg:rgba(59,130,246,0.12);">
+          <div class="metric-top">
+            <div class="metric-icon">❤️</div>
+            <div class="metric-lbl">Heart Rate</div>
+          </div>
+          <div class="metric-val" id="m-hr">—<span class="metric-unit">BPM</span></div>
+        </div>
+        <div class="metric-card" style="--m-ibg:rgba(239,68,68,0.10);">
+          <div class="metric-top">
+            <div class="metric-icon">🩸</div>
+            <div class="metric-lbl">SpO₂</div>
+          </div>
+          <div class="metric-val" id="m-spo2">—<span class="metric-unit">%</span></div>
+        </div>
+        <div class="metric-card" id="m-stress-card" style="--m-ibg:rgba(34,197,94,0.10);">
+          <div class="metric-top">
+            <div class="metric-icon">🧠</div>
+            <div class="metric-lbl">Stress</div>
+          </div>
+          <div class="metric-val" id="m-stress" style="font-size:1.15rem;">—</div>
+        </div>
+        <div class="metric-card" style="--m-ibg:rgba(99,102,241,0.12);">
+          <div class="metric-top">
+            <div class="metric-icon">📈</div>
+            <div class="metric-lbl">HRV RMSSD</div>
+          </div>
+          <div class="metric-val" id="m-hrv">—<span class="metric-unit">ms</span></div>
+        </div>
+      </div>
+
+      <!-- Signal quality bar -->
+      <div class="bar-wrap" style="margin-bottom:0;">
+        <div class="bar-row">
+          <span class="bar-lbl">Signal Quality</span>
+          <span class="bar-pct" id="m-bar-pct">0%</span>
+        </div>
+        <div class="bar-bg">
+          <div class="bar-fill" id="m-bar-fill" style="width:0%;"></div>
+        </div>
+      </div>
+
+      <!-- AI divider -->
+      <div class="modal-divider">
+        <div class="eq"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        Claude AI Interpretation
+        <span style="font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+                     color:rgba(99,102,241,0.55);font-family:'JetBrains Mono',monospace;
+                     padding:2px 7px;background:rgba(99,102,241,0.08);
+                     border:1px solid rgba(99,102,241,0.2);border-radius:20px;">BETA</span>
+      </div>
+
+      <!-- AI loading state -->
+      <div id="m-ai-loading" class="modal-ai-loading">
+        <div style="font-size:1.6rem;animation:subtle-bob 1.2s ease-in-out infinite;margin-bottom:9px;">🧠</div>
+        <div style="font-size:0.83rem;font-weight:600;color:var(--t1);margin-bottom:5px;">Analysing vitals with Claude AI…</div>
+        <div id="m-ai-sub" style="font-size:0.68rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">Preparing health report…</div>
+      </div>
+
+      <!-- AI result panel -->
+      <div id="m-ai-result" class="modal-ai-result" style="display:none;">
+        <div id="m-ai-text" class="modal-ai-text"></div>
+        <div class="modal-ai-footer">
+          <span style="font-size:0.6rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">⚡ Powered by Claude AI</span>
+          <span style="color:var(--line2);">·</span>
+          <span style="font-size:0.6rem;color:var(--t3);font-family:'JetBrains Mono',monospace;">Not a substitute for professional medical advice</span>
+        </div>
+      </div>
+
+      <!-- AI error state -->
+      <div id="m-ai-error" class="alert warn" style="display:none;">
+        ⚠ &nbsp;AI analysis unavailable — please reset and try again
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <!-- ── Footer actions ── -->
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeVitalsModal(); resetVitals();">↺ &nbsp;Measure Again</button>
+      <button class="btn-done" onclick="closeVitalsModal()">✓ &nbsp;Done</button>
+    </div>
+
+  </div><!-- /modal-panel -->
+</div><!-- /vitals-modal-overlay -->
+
+<!-- ════════════════════════════════════════
+     SCRIPTS (data before logic)
+════════════════════════════════════════ -->
+<!-- Real in-browser face detector (TinyFaceDetector model), used by camera.js -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/medicine.js"></script>
+<script src="js/agriculture.js"></script>
+
+</body>
+</html>

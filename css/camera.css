@@ -1,0 +1,223 @@
+/* ══════════════════════════════════════════════
+   CAMERA — chrome, viewport, overlays, waveform
+   duo-diagnose / CODE:VITAL 2026
+══════════════════════════════════════════════ */
+
+/* ── Chrome bar ─────────────────────────────── */
+.cam-chrome {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  background: #080811;
+  border-bottom: 1px solid rgba(59,130,246,0.16);
+  position: relative;
+}
+.cam-chrome::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.8) 35%, rgba(99,102,241,0.8) 65%, transparent 100%);
+}
+
+/* Traffic-light dots */
+.cam-dots { display: flex; align-items: center; gap: 6px; }
+.c-dot { width: 10px; height: 10px; border-radius: 50%; }
+.c-dot.r { background: #ff5f57; box-shadow: 0 0 6px rgba(255,95,87,0.5); }
+.c-dot.y { background: #febc2e; box-shadow: 0 0 6px rgba(254,188,46,0.5); }
+.c-dot.g { background: #28c840; box-shadow: 0 0 6px rgba(40,200,64,0.5); }
+
+.cam-label {
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+  margin-left: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.cam-live {
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.1em; color: #22c55e;
+  font-family: 'JetBrains Mono', monospace;
+  animation: blink 2s ease-in-out infinite;
+}
+.cam-live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #22c55e; display: inline-block;
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.5);
+  animation: pulse-dot 2s ease-out infinite;
+  margin-right: 4px;
+}
+
+/* ── Viewport ───────────────────────────────── */
+.cam-viewport {
+  background: #06060e;
+  aspect-ratio: 4/3;
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  /* Hard stacking-context boundary — video cannot escape this box */
+  isolation: isolate;
+  contain: layout paint;
+  transform: translateZ(0);
+}
+.cam-feed-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 50% 40%,
+    #1a1a2e 0%, #0d0d1a 60%, #080811 100%);
+}
+
+/* Simulated face */
+.cam-face {
+  position: absolute;
+  width: 42%; top: 14%; left: 29%;
+  display: flex; flex-direction: column; align-items: center;
+  animation: subtle-bob 4s ease-in-out infinite;
+}
+.cam-face-oval {
+  width: 100px; height: 128px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 30%,
+    rgba(245,222,179,0.18) 0%,
+    rgba(210,180,140,0.10) 50%,
+    transparent 100%);
+  border: 1px solid rgba(245,222,179,0.12);
+  position: relative;
+}
+
+/* Detection bounding box */
+.cam-bbox {
+  position: absolute;
+  border: 2px solid var(--green);
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(34,197,94,0.25);
+  top: 10%; left: 22%; width: 56%; height: 78%;
+  animation: bbox-flicker 3s ease-in-out infinite;
+}
+
+/* Forehead ROI marker */
+.cam-roi {
+  position: absolute;
+  border: 1px dashed rgba(255,255,255,0.25);
+  border-radius: 4px;
+  top: 14%; left: 34%; width: 32%; height: 12%;
+  background: rgba(59,130,246,0.08);
+}
+
+/* Viewfinder corners */
+.vf { position: absolute; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); }
+.vf.tl { top: 16px;    left: 16px;  border-right: none; border-bottom: none; }
+.vf.tr { top: 16px;    right: 16px; border-left: none;  border-bottom: none; }
+.vf.bl { bottom: 16px; left: 16px;  border-right: none; border-top: none; }
+.vf.br { bottom: 16px; right: 16px; border-left: none;  border-top: none; }
+
+/* Overlay badges */
+.cam-badges {
+  position: absolute; top: 12px; left: 12px;
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.cam-badge {
+  background: rgba(8,8,17,0.85);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--t0); padding: 3px 9px;
+  border-radius: 20px; font-size: 0.72rem;
+  font-weight: 600; display: flex; align-items: center; gap: 5px;
+  backdrop-filter: blur(4px);
+  font-family: 'JetBrains Mono', monospace;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.badge-dot.g { background: var(--green);          box-shadow: 0 0 6px rgba(34,197,94,0.8);  animation: blink 2s infinite; }
+.badge-dot.y { background: var(--amber);          box-shadow: 0 0 6px rgba(245,158,11,0.6); animation: blink 2s infinite; }
+.badge-dot.r { background: var(--red, #ef4444);   box-shadow: 0 0 6px rgba(239,68,68,0.6); }
+.badge-dot.n { background: var(--bg4, #26262f); }
+
+/* Waveform strip */
+.cam-wave {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 52px;
+  background: linear-gradient(to top, rgba(8,8,17,0.95) 0%, transparent 100%);
+  display: flex; align-items: flex-end; padding: 0 14px 8px;
+  gap: 2px;
+}
+.cam-wave-bar {
+  flex: 1; background: rgba(59,130,246,0.55);
+  border-radius: 1px;
+  animation: wave-bar 1.4s ease-in-out infinite;
+}
+.wave-label {
+  position: absolute; bottom: 58px; left: 14px;
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+  color: rgba(59,130,246,0.55); text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Status bar ─────────────────────────────── */
+.cam-statusbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 7px 16px;
+  background: #080811;
+  border-top: 1px solid rgba(59,130,246,0.1);
+  font-size: 0.57rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  font-family: 'JetBrains Mono', monospace;
+}
+.sb-item { display: flex; align-items: center; gap: 4px; }
+.sb-ok-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); box-shadow: 0 0 4px rgba(34,197,94,0.8); animation: blink 2s infinite; }
+.sb-right { margin-left: auto; color: rgba(59,130,246,0.4); }
+
+/* ── Dynamic bbox detection state ──────────── */
+.cam-bbox-overlay.face-ok {
+  border-color: var(--green) !important;
+  box-shadow: 0 0 16px rgba(34,197,94,0.35) !important;
+}
+.cam-bbox-overlay.face-bad {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 16px rgba(239,68,68,0.4) !important;
+}
+.cam-roi-overlay.face-ok  { border-color: rgba(34,197,94,0.45) !important;  background: rgba(34,197,94,0.07) !important; }
+.cam-roi-overlay.face-bad { border-color: rgba(239,68,68,0.45) !important; background: rgba(239,68,68,0.07) !important; }
+
+/* ── Persistent on-screen face-position message ── */
+.cam-face-msg {
+  position: absolute;
+  top: 79%;
+  left: 50%;
+  transform: translate(-50%, 0) scale(1);
+  display: none;
+  align-items: center;
+  gap: 7px;
+  max-width: 90%;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.4;
+  background: rgba(8,8,17,0.88);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+  padding: 7px 13px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  backdrop-filter: blur(4px);
+  z-index: 4;
+  animation: facemsg-in 0.25s ease;
+}
+.cam-face-msg.show  { display: flex; }
+.cam-face-msg.pulse { animation: facemsg-pulse 0.5s ease; }
+.cfm-icon { font-size: 0.8rem; }
+
+@keyframes facemsg-in {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes facemsg-pulse {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50%      { transform: translate(-50%, 0) scale(1.07); }
+}
+
+/* Shake feedback on the start button when blocked */
+.btn-shake { animation: btn-shake-kf 0.5s ease; }
+@keyframes btn-shake-kf {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(3px); }
+}
