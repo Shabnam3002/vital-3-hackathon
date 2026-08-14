@@ -3,7 +3,9 @@
 <img src="https://skillicons.dev/icons?i=js,html,css,python"/>
 </p>
 
-
+<p align="center">
+Dual-Track Diagnostics
+</p>
 ## Dual-Track Diagnostics
 Diagnostics in human medicine and crop science share a fundamental bottleneck: early-stage detection requires specialized, expensive hardware.
 
