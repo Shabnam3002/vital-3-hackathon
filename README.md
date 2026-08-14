@@ -1,7 +1,4 @@
-<p align="center"> 
-  
-  ## VITAL 3 (2026 Hackathon Winner) 
-</p>
+## VITAL 3 (2026 Hackathon Winner) 
 <p align="center">
   
   ![JavaScript](https://img.shields.io/badge/JavsScript-yellow.svg)
