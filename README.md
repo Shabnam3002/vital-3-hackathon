@@ -1,4 +1,5 @@
 <h2 align="center"> VITAL 3 (2026 Hackathon Winner)</h2>
+---
 <p align="center">
 <img src="https://skillicons.dev/icons?i=js,html,css,python"/>
 </p>
