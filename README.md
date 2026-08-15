@@ -24,25 +24,23 @@ Diagnostics in human medicine and crop science share a fundamental bottleneck: e
 
 ---
 
-## ⚡ Recruiter TL;DR (Quick Pitch)
-
 **Duo-Diagnose** is a high-fidelity research prototype that replaces expensive medical and agricultural screening hardware with standard webcam feed and computer vision.
 
 ### 🌟 Why this project stands out:
 1. **🏆 Winner of Vital 3 Hackathon (CODE:VITAL 2026)** out of numerous competitive entries.
-2. **🤖 Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
+2. **Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
 3. **🌾 Agri-Tech AI Integration**: Implements a deep-learning convolutional neural network pipeline using **ResNet-50** to analyze leaf structures and detect crop diseases instantly with tailor-made organic/chemical treatment advice.
 4. **💡 Zero-Latency Local Architecture**: Features an offline-capable, highly-responsive frontend that performs face-tracking fallbacks and localized expert reasoning with zero external API dependencies.
 
-### 🛠️ Core Tech Stack & Toolkit
+### Tech Stack & Toolkit
 
 | Layer | Technologies & Frameworks |
 | :--- | :--- |
 | **Frontend UI/UX** | HTML5, CSS3 Grid/Flexbox, Custom Glassmorphic CSS Variables, Hardware-Accelerated Keyframes |
-| **Computer Vision (JS)** | `face-api.js` (Lightweight TinyFaceDetector neural network - ~190KB) |
+| **Computer Vision (JS)** | `face-api.js` (Lightweight TinyFaceDetector neural network ) |
 | **Algorithms (JS)** | Custom RGB Skin-Tone Segmentation Heuristics (Offline webcam face fallback) |
 | **Deep Learning (AI)** | **ResNet-50 Convolutional Neural Network** trained on the *PlantVillage* dataset (38 classes) |
-| **Local Desktop App** | Python 3.12, OpenCV (FacePhys computer vision module), `run_pules.py` camera processor |
+| **Local Desktop App** | Python, OpenCV (FacePhys computer vision module), `run_pules.py` camera processor |
 
 ---
 
