@@ -3,6 +3,21 @@
 <p align="center">
 <img src="https://skillicons.dev/icons?i=js,html,css,python"/>
 </p>
+
+###  Science of rPPG
+* **Concept:** Heartbeats cause micro-fluctuations in facial blood volume, modifying skin light absorption.
+* **Method:** Extracts raw pulse waves by analyzing webcam pixel color changes over a **15-second scan**.
+
+###  Dual-Layer Face Tracking
+* **Primary Path:** Uses `face-api.js` (TinyFaceDetector, ~190KB) to track the forehead Region of Interest (ROI).
+* **Offline Fallback:** Custom RGB skin-tone filter rejects background noise when offline:
+  $$\text{Skin Filter: } R>90 \land G>40 \land B>20 \land R>G \land R>B$$
+
+###  Local Diagnostics & RMSSD Engine
+* **Metrics:** Computes real-time Heart Rate (BPM) and Oxygen Saturation ($SpO_2$) completely in-browser.
+* **Stress Monitor:** Tracks heart rate variability (RMSSD). Low RMSSD (**< 20ms** / High Stress) triggers automated recommendations like the **4-7-8 Breathing Technique**.
+
+
 Diagnostics in human medicine and crop science share a fundamental bottleneck: early-stage detection requires specialized, expensive hardware.
 
 **For Humans:** Traditional clinical monitoring requires pulse oximeters, ECGs, and chest straps.
@@ -26,12 +41,6 @@ Diagnostics in human medicine and crop science share a fundamental bottleneck: e
 
 **Duo-Diagnose** is a high-fidelity research prototype that replaces expensive medical and agricultural screening hardware with standard webcam feed and computer vision.
 
-### 🌟 Why this project stands out:
-1. **🏆 Winner of Vital 3 Hackathon (CODE:VITAL 2026)** out of numerous competitive entries.
-2. **Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
-3. **🌾 Agri-Tech AI Integration**: Implements a deep-learning convolutional neural network pipeline using **ResNet-50** to analyze leaf structures and detect crop diseases instantly with tailor-made organic/chemical treatment advice.
-4. **💡 Zero-Latency Local Architecture**: Features an offline-capable, highly-responsive frontend that performs face-tracking fallbacks and localized expert reasoning with zero external API dependencies.
-
 ### Tech Stack & Toolkit
 
 | Layer | Technologies & Frameworks |
@@ -43,16 +52,9 @@ Diagnostics in human medicine and crop science share a fundamental bottleneck: e
 | **Local Desktop App** | Python, OpenCV (FacePhys computer vision module), `run_pules.py` camera processor |
 
 ---
-
-###  Science of rPPG
-* **Concept:** Heartbeats cause micro-fluctuations in facial blood volume, modifying skin light absorption.
-* **Method:** Extracts raw pulse waves by analyzing webcam pixel color changes over a **15-second scan**.
-
-###  Dual-Layer Face Tracking
-* **Primary Path:** Uses `face-api.js` (TinyFaceDetector, ~190KB) to track the forehead Region of Interest (ROI).
-* **Offline Fallback:** Custom RGB skin-tone filter rejects background noise when offline:
-  $$\text{Skin Filter: } R>90 \land G>40 \land B>20 \land R>G \land R>B$$
-
-###  Local Diagnostics & RMSSD Engine
-* **Metrics:** Computes real-time Heart Rate (BPM) and Oxygen Saturation ($SpO_2$) completely in-browser.
-* **Stress Monitor:** Tracks heart rate variability (RMSSD). Low RMSSD (**< 20ms** / High Stress) triggers automated recommendations like the **4-7-8 Breathing Technique**.
+### 🌟 Why this project stands out:
+1. **🏆 Winner of Vital 3 Hackathon (CODE:VITAL 2026)** out of numerous competitive entries.
+ <img width="1280" height="582" alt="Image" src="https://github.com/user-attachments/assets/b893490b-71bb-41a5-b58c-1949c5739de2" />
+2. **Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
+3. **🌾 Agri-Tech AI Integration**: Implements a deep-learning convolutional neural network pipeline using **ResNet-50** to analyze leaf structures and detect crop diseases instantly with tailor-made organic/chemical treatment advice.
+4. **💡 Zero-Latency Local Architecture**: Features an offline-capable, highly-responsive frontend that performs face-tracking fallbacks and localized expert reasoning with zero external API dependencies.
