@@ -55,6 +55,8 @@ Diagnostics in human medicine and crop science share a fundamental bottleneck: e
 ### 🌟 Why this project stands out:
 1. **🏆 Winner of Vital 3 Hackathon (CODE:VITAL 2026)** out of numerous competitive entries.
  <img width="1280" height="582" alt="Image" src="https://github.com/user-attachments/assets/b893490b-71bb-41a5-b58c-1949c5739de2" />
+ <img width="803" height="1428" alt="Image" src="https://github.com/user-attachments/assets/4aa1c4f7-882a-4eff-b37e-a74adeda6a29" />
+ <img width="1428" height="803" alt="Image" src="https://github.com/user-attachments/assets/c7faae6b-944d-4ee7-8b0f-f2a5d04c355c" />
  
 2. **Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
    
