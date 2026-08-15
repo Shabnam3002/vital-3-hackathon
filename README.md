@@ -55,6 +55,9 @@ Diagnostics in human medicine and crop science share a fundamental bottleneck: e
 ### 🌟 Why this project stands out:
 1. **🏆 Winner of Vital 3 Hackathon (CODE:VITAL 2026)** out of numerous competitive entries.
  <img width="1280" height="582" alt="Image" src="https://github.com/user-attachments/assets/b893490b-71bb-41a5-b58c-1949c5739de2" />
+ 
 2. **Contactless Health Tracking**: Extracts live heart rate, HRV, stress levels, and oxygen levels (`SpO₂`) directly from forehead and cheek blood-volume changes using just a laptop webcam (rPPG).
+   
 3. **🌾 Agri-Tech AI Integration**: Implements a deep-learning convolutional neural network pipeline using **ResNet-50** to analyze leaf structures and detect crop diseases instantly with tailor-made organic/chemical treatment advice.
-4. **💡 Zero-Latency Local Architecture**: Features an offline-capable, highly-responsive frontend that performs face-tracking fallbacks and localized expert reasoning with zero external API dependencies.
+
+4. ** Zero-Latency Local Architecture**: Features an offline-capable, highly-responsive frontend that performs face-tracking fallbacks and localized expert reasoning with zero external API dependencies.
